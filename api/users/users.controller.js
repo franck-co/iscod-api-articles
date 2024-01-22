@@ -73,6 +73,23 @@ class UsersController {
       next(err);
     }
   }
+  /**
+   * 
+   * @param {import('express').Request} req 
+   * @param {import('express').Response} res 
+   * @param {import('express').NextFunction} next 
+   */
+  async me(req, res, next){
+    try{
+      const user = await usersService.get(req.user.userId)
+      if (!user) {
+        throw new NotFoundError();
+      }
+      res.json(user);
+    }catch(err){
+      next(err)
+    }
+  }
 }
 
 module.exports = new UsersController();
