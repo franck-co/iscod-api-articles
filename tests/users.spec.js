@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config");
 const mongoose = require("mongoose");
 const mockingoose = require("mockingoose");
-const User = require("../api/users/users.model");
+const {User} = require("../api/users/users.schema");
 const usersService = require("../api/users/users.service");
 describe("tester API users", () => {
   let token;
@@ -26,7 +26,6 @@ describe("tester API users", () => {
 
   beforeEach(() => {
     token = jwt.sign({ userId: USER_ID }, config.secretJwtToken);
-    // mongoose.Query.prototype.find = jest.fn().mockResolvedValue(MOCK_DATA);
     mockingoose(User).toReturn(MOCK_DATA, "find");
     mockingoose(User).toReturn(MOCK_DATA[0], "findOne");
     mockingoose(User).toReturn(MOCK_DATA_CREATED, "save");
@@ -82,7 +81,8 @@ describe("tester API users", () => {
     const res = await request(app)
     .get("/api/users/me")
     .set("x-access-token", jwt.sign({ userId: WRONG_USER_ID }, config.secretJwtToken));
-    expect(res.status).toBe(404);
+    //401 because if user is not found, authorisation is declined
+    expect(res.status).toBe(401);
   })
 
   afterEach(() => {

@@ -5,8 +5,7 @@ const cors = require("cors");
 const NotFoundError = require("./errors/not-found");
 const userRouter = require("./api/users/users.router");
 const usersController = require("./api/users/users.controller");
-const authMiddleware = require("./middlewares/auth");
-require("./api/articles/articles.schema"); // temporaire
+const articlesRouter = require("./api/articles/articles.router");
 const app = express();
 
 const server = http.createServer(app);
@@ -14,10 +13,6 @@ const io = new Server(server);
 
 io.on("connection", (socket) => {
   console.log("a user connected");
-  /*socket.on("my_event", (data) => {
-    console.log(data);
-  });
-  io.emit("event_from_server", { test: "foo" });*/
 });
 
 app.use((req, res, next) => {
@@ -28,7 +23,9 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/users", authMiddleware, userRouter);
+app.use("/api/users", userRouter);
+app.use("/api/articles", articlesRouter);
+
 app.post("/login", usersController.login);
 app.post("/signup", usersController.create);
 

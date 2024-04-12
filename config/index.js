@@ -1,5 +1,7 @@
+require('dotenv').config();
+
 module.exports = {
   port: process.env.PORT || 3000,
-  mongoUri: "mongodb://localhost:27017/myapp",
-  secretJwtToken: "test",
+  mongoUri: process.env.MONGO_URI ?? "mongodb://localhost:27017/myapp",
+  secretJwtToken: process.env.JWT_SECRET ?? "test",
 };

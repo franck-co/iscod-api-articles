@@ -3,6 +3,9 @@ const UnauthorizedError = require("../../errors/unauthorized");
 const jwt = require("jsonwebtoken");
 const config = require("../../config");
 const usersService = require("./users.service");
+const articlesService = require("../articles/articles.service");
+
+/**@typedef {{userId:string}} JwtPayload */
 
 class UsersController {
   async getAll(req, res, next) {
@@ -74,19 +77,35 @@ class UsersController {
     }
   }
   /**
-   * 
    * @param {import('express').Request} req 
    * @param {import('express').Response} res 
    * @param {import('express').NextFunction} next 
    */
-  async me(req, res, next){
-    try{
-      const user = await usersService.get(req.user.userId)
+  async me(req, res, next) {
+    try {
+      const user = await usersService.get(req.user._id)
       if (!user) {
         throw new NotFoundError();
       }
       res.json(user);
-    }catch(err){
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  /**
+   * @param {import('express').Request} req 
+   * @param {import('express').Response} res 
+   * @param {import('express').NextFunction} next 
+   */
+  async getArticles(req, res, next) {
+    try {
+      const articles = await articlesService.getArticlesByUserId(req.params.id)
+      if (!articles) {
+        throw new NotFoundError();
+      }
+      res.json(articles);
+    } catch (err) {
       next(err)
     }
   }

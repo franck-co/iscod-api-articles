@@ -1,6 +1,10 @@
 const { Schema, model } = require("mongoose");
-const { isEmail } = require("validator");
 const bcrypt = require("bcrypt");
+
+const UserRole = {
+  admin: "admin",
+  member: "member"
+}
 
 const userSchema = Schema({
   name: String,
@@ -26,7 +30,7 @@ const userSchema = Schema({
     type: String,
     //enum: ["admin", "member"],
     enum: {
-      values: ["admin", "member"],
+      values: [UserRole.admin, UserRole.member],
       message: "{VALUE} inconnue",
     },
   },
@@ -46,7 +50,10 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.pre("save", async function () {
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = bcrypt.hash(this.password, 10);
 });
 
-module.exports = model("User", userSchema);
+module.exports = {
+  User: model("User", userSchema),
+  UserRole
+}
